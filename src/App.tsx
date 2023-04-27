@@ -1,33 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, ChangeEvent, useEffect } from 'react'
+// import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+
 import './App.css'
 
+import bcrypt from 'bcryptjs';
+
+console.log(bcrypt.hashSync('123456', 10));
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [inputPassword, setInputPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [hashedPassword, setHashedPassword] = useState('hashing...')
+  const [result, setResult] = useState('確認中...')
+
+  useEffect(() => {
+    const f = async () => {
+      setHashedPassword(await bcrypt.hash(inputPassword, 8))
+    }
+    f()
+  }, [inputPassword])
+
+  useEffect(() => {
+    const f = async () => {
+      setResult(await bcrypt.compare(confirmPassword, hashedPassword)?'合致':'不一致')
+    }
+    f()
+  }, [confirmPassword, hashedPassword])
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <TextField
+        label='パスワードを入力してね'
+        variant='outlined'
+        onChange={(event) => setInputPassword(event.target.value)}
+      />
+      <TextField
+        label='パスワードを入力してね(確認)'
+        variant='outlined'
+        onChange={(event) => setConfirmPassword(event.target.value)}
+      />
+      {/* <Button variant="contained" >
+        ハッシュ化
+      </Button> */}
+      <p>パスワード平文: {inputPassword}</p>
+      <p>パスワード平文(確認):{confirmPassword}</p>
+      <p>ハッシュ化: {hashedPassword}</p>
+      <p>パスワード合致してるかどうか: {result}</p>
     </>
   )
 }
