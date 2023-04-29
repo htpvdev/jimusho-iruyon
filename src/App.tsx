@@ -6,11 +6,9 @@ import LoginDialog from './LoginDialog'
 
 // Apollo を使って HasuraのGraphQLサーバ に接続
 const client = new ApolloClient({
-  uri: 'https://optimal-goshawk-18.hasura.app/v1/graphql',
-  // uri: '',
+  uri: '',
   cache: new InMemoryCache(),
   headers: {
-    'x-hasura-admin-secret': 'IwjMtnY4pFY2QeozfrDyRjl8HS6Gvpj4nGOh6LsFKSGAaa1aeZoYG2v3cFKnOdHI',
   },
 })
 
