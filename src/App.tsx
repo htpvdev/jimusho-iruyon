@@ -8,13 +8,15 @@ import LoginDialog from './LoginDialog'
 
 // Apollo を使って HasuraのGraphQLサーバ に接続
 const client = new ApolloClient({
-  uri: '',
+  uri: import.meta.env.VITE_HASURA_GRAPHQL_URL,
   cache: new InMemoryCache(),
   headers: {
+    'x-hasura-admin-secret': import.meta.env.VITE_HASURA_ADMIN_SECRET as string,
   },
 })
 
 const App = () => {
+  console.log(import.meta.env.VITE_AUTH0_DOMAIN)
   const [loginState, setLoginState] = useState('logged out')
   const [companyId, setCompanyId] = useState<number|null>(null)
   const [companyName, setCompanyName] = useState('loading...')
