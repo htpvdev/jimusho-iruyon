@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ApolloClient, ApolloProvider, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 
 import RoutePage from './RoutePage'
 import LoginDialog from './LoginDialog'
@@ -19,26 +19,6 @@ const App = () => {
 
   const loginDialogProps = { loginState, setLoginState, setCompanyId, setCompanyName }
   const routePageProps = { companyId, companyName, setCompanyId, setCompanyName, setLoginState }
-
-  // useEffect(() => {
-  //   client.query({
-  //     query: gql`
-  //       query {
-  //         __schema {
-  //           types {
-  //             name
-  //             kind
-  //             description
-  //           }
-  //         }
-  //       }
-  //     `,
-  //     variables: {
-  //       id: 1,
-  //     },
-  //   })
-  //   .then((result) => console.log(result))
-  // }, [])
 
   return (
     <ApolloProvider client={client}>

@@ -1,6 +1,6 @@
 import { useRef, Dispatch, SetStateAction } from 'react'
+import { useLazyQuery } from '@apollo/client'
 import bcrypt from 'bcryptjs'
-import { gql, useLazyQuery } from '@apollo/client'
 
 import {
   Button,
@@ -13,15 +13,7 @@ import {
   TextField,
 } from '@mui/material'
 
-const fetchCompanyGQL = gql`
-  query getCompanyById($id: Int!) {
-    company(where: {id: {_eq: $id}}) {
-      id,
-      companyName,
-      hashedPassword,
-    }
-  }
-`
+import { fetchCompanyGQL } from './queries'
 
 type Props = {
   loginState: string
@@ -45,12 +37,10 @@ const LoginDialog = ({ loginState, setLoginState, setCompanyId, setCompanyName }
     bcrypt.compare(passwordRef.current?.value ?? '', data?.company[0]?.hashedPassword ?? '')
     .then((isCollect) => {
       if (isCollect && passwordRef.current?.value !== '') {
-        console.log('login success')
         setLoginState('logged in')
         setCompanyName(data.company[0].companyName)
         setCompanyId(data.company[0].id)
       } else {
-        console.log('login failed')
         setLoginState('failed')
       }
     })
