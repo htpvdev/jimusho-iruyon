@@ -2,16 +2,14 @@ import { useRef, Dispatch, SetStateAction } from 'react'
 import { useLazyQuery } from '@apollo/client'
 import bcrypt from 'bcryptjs'
 
-import {
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
-} from '@mui/material'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import TextField from '@mui/material/TextField'
 
 import { fetchCompanyGQL } from './queries'
 

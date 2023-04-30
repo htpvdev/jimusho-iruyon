@@ -1,35 +1,33 @@
 import { useState, forwardRef, Dispatch, SetStateAction } from 'react'
 import { useMutation } from '@apollo/client'
 
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  Dialog,
-  IconButton,
-  LinearProgress,
-  Slide,
-  Step,
-  StepLabel,
-  Stepper,
-  TextField,
-  Toolbar,
-  Typography
-} from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
-import  CloseIcon from '@mui/icons-material/Close';
-import { DatePicker, LocalizationProvider, TimeField } from '@mui/x-date-pickers';
+import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
+import Dialog from '@mui/material/Dialog'
+import IconButton from '@mui/material/IconButton'
+import LinearProgress from '@mui/material/LinearProgress'
+import Slide from '@mui/material/Slide'
+import Step from '@mui/material/Step'
+import StepLabel from '@mui/material/StepLabel'
+import Stepper from '@mui/material/Stepper'
+import TextField from '@mui/material/TextField'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import { TransitionProps } from '@mui/material/transitions'
+import  CloseIcon from '@mui/icons-material/Close'
+import { DatePicker, LocalizationProvider, TimeField } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { getISOString, getAlertMessage } from './methods';
+import { getISOString, getAlertMessage } from './methods'
 
-import { registerVisitGQL } from './queries';
+import { registerVisitGQL } from './queries'
 
 const steps = [
   '登録種別の選択',
   '日時の入力',
   'ハンドルネームを入力',
-];
+]
 
 type Props = {
   officeId: number
@@ -58,12 +56,12 @@ type SetHandleNameProps = {
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & {
-    children: React.ReactElement;
+    children: React.ReactElement
   },
   ref: React.Ref<unknown>,
 ) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+  return <Slide direction="up" ref={ref} {...props} />
+})
 
 const ChooseVisitType = ({ setNowInOffice, setActiveStep }: ChooseVisitTypeProps) => {
   const onClick = (nowInOffice: boolean) => {

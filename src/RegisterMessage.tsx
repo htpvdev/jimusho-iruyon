@@ -1,6 +1,6 @@
-import Alert, { AlertColor } from '@mui/material/Alert';
+import Alert, { AlertColor } from '@mui/material/Alert'
 import { Collapse, IconButton } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from '@mui/icons-material/Close'
 
 type Props = {
   open: boolean

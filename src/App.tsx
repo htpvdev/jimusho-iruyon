@@ -1,14 +1,18 @@
 import { useState } from 'react'
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
+import { ApolloClient } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client'
+import { InMemoryCache } from '@apollo/client'
 
 import RoutePage from './RoutePage'
 import LoginDialog from './LoginDialog'
 
 // Apollo を使って HasuraのGraphQLサーバ に接続
 const client = new ApolloClient({
-  uri: '',
+  uri: 'https://optimal-goshawk-18.hasura.app/v1/graphql',
+  // uri: '',
   cache: new InMemoryCache(),
   headers: {
+    'x-hasura-admin-secret': 'IwjMtnY4pFY2QeozfrDyRjl8HS6Gvpj4nGOh6LsFKSGAaa1aeZoYG2v3cFKnOdHI',
   },
 })
 

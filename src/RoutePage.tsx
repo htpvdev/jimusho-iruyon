@@ -1,25 +1,23 @@
-import { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react'
 import { useQuery } from '@apollo/client'
 
-import {
-  AppBar,
-  Backdrop,
-  Box,
-  Button,
-  CircularProgress,
-  MenuItem,
-  SpeedDial,
-  Toolbar,
-  Typography
-} from '@mui/material'
+import AppBar from '@mui/material/AppBar'
+import Backdrop from '@mui/material/Backdrop'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
+import SpeedDial from '@mui/material/SpeedDial'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
 import EditIcon from '@mui/icons-material/Edit'
 import LogoutIcon from '@mui/icons-material/Logout'
 import SpeedDialIcon from '@mui/material/SpeedDialIcon'
 
 import DailyVisitList from './DailyVisitList'
 import RegisterVisitDialog from './RegisterVisitDialog'
-import RegisterMessage from './RegisterMessage';
+import RegisterMessage from './RegisterMessage'
 import { getISOString, createVisitInfoList } from './methods'
 import { fetchOfficeVisitsGQL } from './queries'
 import { Office, VisitInfo } from './types'
@@ -100,7 +98,7 @@ const RoutePage = ({ companyId, companyName, setCompanyId, setCompanyName, setLo
             labelId="officeList"
             id="officeList"
             defaultValue={(data?.office ?? []).length !== 0 ? data.office[0].id : ''}
-            value={currentOfficeId}
+            value={String(currentOfficeId)}
             label="オフィスを選択..."
             onChange={handleChangeOfficeList}
             sx={{ width: '90%', mr: 2 }}
