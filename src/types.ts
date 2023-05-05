@@ -1,15 +1,15 @@
 
 export type Visit = {
-  visitorName: string
-  visitDateTimeFrom: string
-  visitDateTimeTo: string
+  user_handle_name: string
+  visit_datetime_from: string
+  visit_datetime_to: string
 }
 
 export type Office = {
   id: number
-  officeName: string
-  companyId: number
-  officeVisits: Visit[]
+  office_name: string
+  company_id: number
+  office_visits: Visit[]
 }
 
 export type VisitInfo = {

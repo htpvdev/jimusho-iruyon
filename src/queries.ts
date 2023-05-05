@@ -1,25 +1,81 @@
 import { gql } from '@apollo/client'
 
-export const fetchCompanyGQL = gql`
-  query getCompanyById($id: Int!) {
-    company(where: {id: {_eq: $id}}) {
+export const fetchUserGQL = gql`
+  query getUserById($id: String!) {
+    users(where: {id: {_eq: $id}}) {
       id,
-      companyName,
-      hashedPassword,
+      name,
+      handle_name,
+      user_company {
+        id,
+        company_name,
+        company_code,
+      },
+    }
+  }
+`
+
+export const fetchCompanyGQL = gql`
+  query getCompany(
+    $companyCode: String!,
+    $hashedPassword: String!,
+  ) {
+    companies(where: {
+      _and: [
+        {company_code: {_eq: $companyCode}},
+        {hashed_password: {_eq: $hashedPassword}},
+      ]
+    }) {
+      id,
+      company_name,
+    }
+  }
+`
+
+export const setCompanyGQL = gql`
+  mutation setCompanyId (
+    $userId: String!,
+    $companyId: Int!,
+  ) {
+    update_users_by_pk(
+      pk_columns: { id: $userId },
+      _set: { company_id: $companyId }
+    ) { company_id }
+  }
+`
+
+export const setHandleNameGQL = gql`
+  mutation setHandleName (
+    $userId: String!,
+    $handleName: String!,
+  ) {
+    update_users_by_pk(
+      pk_columns: { id: $userId },
+      _set: { handle_name: $handleName }
+    ) { company_id }
+    update_visits(
+      where: {}
+      _set: { user_handle_name: $handleName }
+    )
+    {
+      affected_rows
     }
   }
 `
 
 export const fetchOfficeVisitsGQL = gql`
   query getOfficeVisitsByCompanyId($companyId: Int!, $gteDateTo: timestamp!) {
-    office(where: {companyId: {_eq: $companyId}}) {
+    offices(where: {company_id: {_eq: $companyId}}) {
       id,
-      officeName,
-      companyId,
-      officeVisits(where: {visitDateTimeTo: { _gte: $gteDateTo }}) {
-        visitorName
-        visitDateTimeFrom
-        visitDateTimeTo
+      office_name,
+      company_id,
+      office_visits(
+        where: {visit_datetime_to: { _gte: $gteDateTo }},
+        order_by: {visit_datetime_from: asc}
+      ) {
+        visit_datetime_from
+        visit_datetime_to
+        user_handle_name
       }
     }
   }
@@ -28,17 +84,19 @@ export const fetchOfficeVisitsGQL = gql`
 export const registerVisitGQL = gql`
   mutation registerVisit (
     $officeId: Int!,
-    $visitorName: bpchar!,
+    $userId: String!,
+    $userName: String!,
     $visitDateTimeFrom: timestamp!,
     $visitDateTimeTo: timestamp!
   ) {
-    insert_visit(objects: [
+    insert_visits(objects: [
       {
-        officeId: $officeId,
-        visitorName: $visitorName,
-        visitDateTimeFrom: $visitDateTimeFrom,
-        visitDateTimeTo: $visitDateTimeTo,
+        office_id: $officeId,
+        user_id: $userId,
+        user_handle_name: $userName,
+        visit_datetime_from: $visitDateTimeFrom,
+        visit_datetime_to: $visitDateTimeTo,
       }
-    ]) { returning { officeId } }
+    ]) { returning { office_id } }
   }
 `

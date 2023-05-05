@@ -3,8 +3,8 @@ import { Visit, VisitInfo } from './types'
 export const nowInOffice = (visit: Visit) => {
   const nowDate = new Date()
   return (
-    new Date(visit.visitDateTimeFrom) <= nowDate
-    && nowDate <= new Date(visit.visitDateTimeTo)
+    new Date(visit.visit_datetime_from) <= nowDate
+    && nowDate <= new Date(visit.visit_datetime_to)
   )
 }
 
@@ -33,14 +33,14 @@ export const getAlertMessage = (handleName: string): string|null => {
 export const createVisitInfoList = (visits: Visit[]): VisitInfo[] => {
   const visitDateList: string[] = [
     ...new Set(
-      visits.map(visit => visit.visitDateTimeTo.split('T')[0])
+      visits.map(visit => visit.visit_datetime_to.split('T')[0])
     )
   ]
 
   const visitInfoList: VisitInfo[] = visitDateList.map((visitDate) => {
     const date = new Date(visitDate)
     const visitList = visits.filter((visit) => {
-      return date.getTime() === new Date(visit.visitDateTimeTo.split('T')[0]).getTime()
+      return date.getTime() === new Date(visit.visit_datetime_to.split('T')[0]).getTime()
     })
 
     return {

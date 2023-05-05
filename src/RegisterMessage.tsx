@@ -16,12 +16,12 @@ const RegisterMessage = ({ open, severity, message, onClick }: Props) => (
       severity={severity}
       action={
         <IconButton
-          aria-label="close"
-          color="inherit"
-          size="small"
+          aria-label='close'
+          color='inherit'
+          size='small'
           onClick={onClick}
         >
-          <CloseIcon fontSize="inherit" />
+          <CloseIcon fontSize='inherit' />
         </IconButton>
       }
       sx={{ mb: 2 }}

@@ -1,5 +1,6 @@
-import { useState, Dispatch, SetStateAction, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@apollo/client'
+import { useAuth0 } from '@auth0/auth0-react'
 
 import AppBar from '@mui/material/AppBar'
 import Backdrop from '@mui/material/Backdrop'
@@ -16,36 +17,36 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import SpeedDialIcon from '@mui/material/SpeedDialIcon'
 
 import DailyVisitList from './DailyVisitList'
-import RegisterVisitDialog from './RegisterVisitDialog'
 import RegisterMessage from './RegisterMessage'
+import RegisterVisitDialog from './RegisterVisitDialog'
+import SetupDialog from './SetupDialog'
 import { getISOString, createVisitInfoList } from './methods'
-import { fetchOfficeVisitsGQL } from './queries'
+import { fetchOfficeVisitsGQL, fetchUserGQL } from './queries'
 import { Office, VisitInfo } from './types'
 
-type Props = {
-  companyId: number|null
-  companyName: string
-  setCompanyId: Dispatch<SetStateAction<number|null>>
-  setCompanyName: Dispatch<SetStateAction<string>>
-  setLoginState: Dispatch<SetStateAction<string>>
-}
-
-const RoutePage = ({ companyId, companyName, setCompanyId, setCompanyName, setLoginState }: Props) => {
+const RoutePage = () => {
+  const { user, logout } = useAuth0()
   const [nowDate, setNowDate] = useState(new Date())
   const [currentOfficeId, setCurrentOfficeId] = useState<number>(0)
   const [registerMode, setRegisterMode] = useState<string>('off')
 
-  const { data, loading, refetch } = useQuery(fetchOfficeVisitsGQL, {
-    variables: {
-      companyId,
-      gteDateTo: getISOString(nowDate),
-    }
+  const resFetchUser = useQuery(fetchUserGQL, {
+    variables: { id: user?.sub }
   })
+  const companyId = resFetchUser?.data?.users[0]?.user_company?.id ?? null
+  const companyName = resFetchUser?.data?.users[0]?.user_company?.company_name ?? 'loading...'
 
-  // visitテーブルのデータを加工する処理
+  const resFetchOfficeVisit = useQuery(fetchOfficeVisitsGQL, {
+    variables: { companyId, gteDateTo: getISOString(nowDate) }
+  })
+  const officeList: Office[] = resFetchOfficeVisit?.data?.offices ?? []
   const visitInfoList = createVisitInfoList(
-    (data?.office ?? []).find((o: Office) => o.id === currentOfficeId)?.officeVisits ?? []
+    officeList.find(o => o.id === currentOfficeId)?.office_visits ?? []
   )
+
+  if (currentOfficeId === 0 && officeList.length !== 0) {
+    setCurrentOfficeId(officeList[0].id)
+  }
 
   const handleChangeOfficeList = (e: SelectChangeEvent) => {
     setCurrentOfficeId(Number(e.target.value))
@@ -53,9 +54,7 @@ const RoutePage = ({ companyId, companyName, setCompanyId, setCompanyName, setLo
 
   const onClickLogout = () => {
     setCurrentOfficeId(0)
-    setCompanyId(null)
-    setCompanyName('loading...')
-    setLoginState('logged out')
+    logout()
   }
 
   const onClickReload = () => setNowDate(new Date())
@@ -68,45 +67,53 @@ const RoutePage = ({ companyId, companyName, setCompanyId, setCompanyName, setLo
     }
   }
 
+  const onClickCloseAlert = () => {
+    setRegisterMode('off')
+    setNowDate(new Date())
+  }
+
   const registerVisitDialogProps = {
+    userId: user?.sub ?? '',
+    userName: resFetchUser?.data?.users[0]?.handle_name ?? '',
     officeId: currentOfficeId,
-    officeName: (data?.office ?? []).find((o: Office) => o.id === currentOfficeId)?.officeName ?? 'Error',
+    officeName: officeList.find(o => o.id === currentOfficeId)?.office_name ?? 'Error',
     setRegisterMode,
   }
 
-  useEffect(() => {
-    if (registerMode === 'registerCompleted') {
-      refetch().then(() => setCurrentOfficeId(currentOfficeId))
-    }
-  }, [registerMode, refetch])
-
+  const loading = resFetchUser.loading || resFetchOfficeVisit.loading
   return (
     <>
-      <AppBar position="static">
+      {
+        !loading &&
+        (resFetchUser?.data?.users[0]?.user_company == null
+        || resFetchUser?.data?.users[0]?.handle_name == null)
+        && <SetupDialog userId={user?.sub} />
+      }
+      <AppBar position='static'>
         <Toolbar>
-          <Typography variant="h6">{companyName}</Typography>
+          <Typography variant='h6'>{companyName}</Typography>
           <div style={{ flexGrow: 1 }}></div>
-          <Button color="inherit" onClick={onClickLogout}><LogoutIcon />ログアウト</Button>
+          <Button color='inherit' onClick={onClickLogout}><LogoutIcon />ログアウト</Button>
         </Toolbar>
       </AppBar>
       <Box sx={{ p: 2 }}>
-        <RegisterMessage open={registerMode === 'cannotOpen'} severity={'error'} message={'オフィスを選択してください。'} onClick={() => setRegisterMode('off')} />
-        <RegisterMessage open={registerMode === 'registerFailed'} severity={'error'} message={'登録が失敗しました。もう一度お試しください。'} onClick={() => setRegisterMode('off')} />
-        <RegisterMessage open={registerMode === 'registerCompleted'} severity={'success'} message={'出社登録が完了しました！'} onClick={() => setRegisterMode('off')} />
+        <RegisterMessage open={registerMode === 'cannotOpen'} severity={'error'} message={'オフィスを選択してください。'} onClick={onClickCloseAlert} />
+        <RegisterMessage open={registerMode === 'registerFailed'} severity={'error'} message={'登録が失敗しました。もう一度お試しください。'} onClick={onClickCloseAlert} />
+        <RegisterMessage open={registerMode === 'registerCompleted'} severity={'success'} message={'出社登録が完了しました！'} onClick={onClickCloseAlert} />
         <Box sx={{ display: 'flex', mb: 2 }}>
           <Select
-            labelId="officeList"
-            id="officeList"
-            defaultValue={(data?.office ?? []).length !== 0 ? data.office[0].id : ''}
+            labelId='officeList'
+            id='officeList'
+            defaultValue={officeList.length !== 0 ? String(officeList[0].id) : ''}
             value={String(currentOfficeId)}
-            label="オフィスを選択..."
+            label='オフィスを選択...'
             onChange={handleChangeOfficeList}
             sx={{ width: '90%', mr: 2 }}
           >
-            {(data?.office ?? []).length === 0 && <MenuItem value={0}>loading...</MenuItem>}
-            {(data?.office as Array<Office> ?? []).map((office: Office, index) => <MenuItem defaultChecked={index === 0} key={office.id} value={office.id}>{office.officeName}</MenuItem>)}
+            {officeList.length === 0 && <MenuItem value={0}>loading...</MenuItem>}
+            {officeList.map((office: Office, index) => <MenuItem defaultChecked={index === 0} key={office.id} value={office.id}>{office.office_name}</MenuItem>)}
           </Select>
-          <Button disabled={loading} onClick={onClickReload} variant="contained">
+          <Button disabled={loading} onClick={onClickReload} variant='contained'>
             {loading ? <CircularProgress /> : '更新'}
           </Button>
         </Box>
@@ -125,14 +132,18 @@ const RoutePage = ({ companyId, companyName, setCompanyId, setCompanyName, setLo
         sx={{ position: 'absolute', bottom: 16, right: 16 }}
       />
       {registerMode === 'on' && <RegisterVisitDialog {...registerVisitDialogProps} />}
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <BD open={loading} />
     </>
   )
 }
+
+const BD = ({ open }: { open: boolean }) => (
+  <Backdrop
+    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    open={open}
+  >
+    <CircularProgress color='inherit' />
+  </Backdrop>
+)
 
 export default RoutePage

@@ -1,34 +1,28 @@
-import { useState } from 'react'
-import { ApolloClient } from '@apollo/client'
-import { ApolloProvider } from '@apollo/client'
-import { InMemoryCache } from '@apollo/client'
+import { useAuth0 } from '@auth0/auth0-react'
 
 import RoutePage from './RoutePage'
-import LoginDialog from './LoginDialog'
-
-// Apollo を使って HasuraのGraphQLサーバ に接続
-const client = new ApolloClient({
-  uri: import.meta.env.VITE_HASURA_GRAPHQL_URL,
-  cache: new InMemoryCache(),
-  headers: {
-    'x-hasura-admin-secret': import.meta.env.VITE_HASURA_ADMIN_SECRET as string,
-  },
-})
+import { Backdrop, CircularProgress } from '@mui/material'
 
 const App = () => {
-  console.log(import.meta.env.VITE_AUTH0_DOMAIN)
-  const [loginState, setLoginState] = useState('logged out')
-  const [companyId, setCompanyId] = useState<number|null>(null)
-  const [companyName, setCompanyName] = useState('loading...')
-
-  const loginDialogProps = { loginState, setLoginState, setCompanyId, setCompanyName }
-  const routePageProps = { companyId, companyName, setCompanyId, setCompanyName, setLoginState }
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0()
+  if (!isAuthenticated && !isLoading) {
+    loginWithRedirect({
+      authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
+    })
+  }
 
   return (
-    <ApolloProvider client={client}>
-      <LoginDialog {...loginDialogProps} />
-      <RoutePage {...routePageProps} />
-    </ApolloProvider>
+    <>
+      {isAuthenticated && !isLoading && <RoutePage />}
+      {isLoading && (
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={true}
+        >
+          <CircularProgress color='inherit' />
+        </Backdrop>
+      )}
+    </>
   )
 }
 

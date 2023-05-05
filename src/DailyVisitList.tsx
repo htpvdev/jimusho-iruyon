@@ -24,8 +24,8 @@ const DailyVisitList = ({ visitDate, visitList }: Props) => {
     <Accordion defaultExpanded sx={{ p: 2 }}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
+        aria-controls='panel1a-content'
+        id='panel1a-header'
       >
         <Typography>{ visitDateText }</Typography>
       </AccordionSummary>
@@ -35,15 +35,15 @@ const DailyVisitList = ({ visitDate, visitList }: Props) => {
             const isInOffice = nowInOffice(visit)
             return (
               <Card
-                key={visit.visitorName + visit.visitDateTimeFrom}
+                key={visit.user_handle_name + visit.visit_datetime_from}
                 sx={{ m: 1, bgcolor: isInOffice ? 'lightgreen' : 'orange' }}
               >
                 <CardContent>
                   <Typography>
-                    {`【${isInOffice ? '在社中' : '出社予定'}】 ${visit.visitorName}`}
+                    {`【${isInOffice ? '在社中' : '出社予定'}】 ${visit.user_handle_name}`}
                   </Typography>
                   <Typography sx={ {textAlign: 'right'} }>
-                    {getTimeLabel(visit.visitDateTimeFrom)} - {getTimeLabel(visit.visitDateTimeTo)}
+                    {getTimeLabel(visit.visit_datetime_from)} - {getTimeLabel(visit.visit_datetime_to)}
                   </Typography>
                 </CardContent>
               </Card>
