@@ -89,14 +89,13 @@ const RoutePage = () => {
     logout()
   }
 
-  const onClickCompanyLogout = () => {
-    resetCompany({ variables: { userId: user?.sub } }).then(() => {
-      setDialogState('off')
-      setAnchorEl(null)
-      setCurrentOfficeId(0)
-      resFetchUser.refetch()
-      resFetchOfficeVisit.refetch()
-    })
+  const onClickCompanyLogout = async () => {
+    setDialogState('off')
+    setAnchorEl(null)
+    setCurrentOfficeId(0)
+    await resetCompany({ variables: { userId: user?.sub } })
+    await resFetchUser.refetch()
+    await resFetchOfficeVisit.refetch()
   }
 
   const onClickReload = () => setNowDate(new Date())
@@ -268,7 +267,10 @@ const RoutePage = () => {
           sx={{ m: 2 }}
         />
         <DialogActions>
-          <Button onClick={() => setDialogState('off')}>キャンセル</Button>
+          <Button onClick={() => {
+            setDialogState('off')
+            setInputHandleName(null)
+          }}>キャンセル</Button>
           <div style={{ flexGrow: 1 }}></div>
           <Button
             disabled={getAlertMessage(inputHandleName) !== null || inputHandleName === null}
