@@ -44,6 +44,20 @@ export const setCompanyGQL = gql`
   }
 `
 
+export const resetCompanyGQL = gql`
+  mutation resetCompanyId (
+    $userId: String!,
+  ) {
+    update_users_by_pk(
+      pk_columns: { id: $userId },
+      _set: {
+        company_id: null,
+        handle_name: null,
+      }
+    ) { company_id }
+  }
+`
+
 export const setHandleNameGQL = gql`
   mutation setHandleName (
     $userId: String!,
@@ -73,6 +87,7 @@ export const fetchOfficeVisitsGQL = gql`
         where: {visit_datetime_to: { _gte: $gteDateTo }},
         order_by: {visit_datetime_from: asc}
       ) {
+        office_id
         visit_datetime_from
         visit_datetime_to
         user_handle_name
@@ -98,5 +113,23 @@ export const registerVisitGQL = gql`
         visit_datetime_to: $visitDateTimeTo,
       }
     ]) { returning { office_id } }
+  }
+`
+
+export const deleteVisitGQL = gql`
+  mutation deleteVisit (
+    $officeId: Int!,
+    $visitDateTimeFrom: timestamp!,
+    $handleName: String!,
+  ) {
+    delete_visits(
+      where: {
+        _and: [
+          {office_id: {_eq: $officeId}},
+          {visit_datetime_from: {_eq: $visitDateTimeFrom}},
+          {user_handle_name: {_eq: $handleName}},
+        ]
+      }
+    ) { affected_rows }
   }
 `

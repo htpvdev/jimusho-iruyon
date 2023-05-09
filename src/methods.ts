@@ -24,7 +24,8 @@ export const getISOString = (date: Date|null): string => {
   return `${date.getFullYear()}-${month}-${day}T${hour}:${minutes}:00.000`
 }
 
-export const getAlertMessage = (handleName: string): string|null => {
+export const getAlertMessage = (handleName: string|null): string|null => {
+  if (handleName === null) return null
   if (handleName === '') return 'ハンドルネームを入力してください'
   if (handleName.length > 20) return 'ハンドルネームは20文字以内で入力してください'
   return null

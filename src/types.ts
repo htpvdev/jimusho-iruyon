@@ -1,5 +1,6 @@
 
 export type Visit = {
+  office_id: number
   user_handle_name: string
   visit_datetime_from: string
   visit_datetime_to: string

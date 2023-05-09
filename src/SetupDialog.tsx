@@ -8,12 +8,14 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import TextField from '@mui/material/TextField'
 import Divider from '@mui/material/Divider/Divider'
-import { Step, StepLabel, Stepper } from '@mui/material'
+import Step from '@mui/material/Step'
+import StepLabel from '@mui/material/StepLabel'
+import Stepper from '@mui/material/Stepper'
+import TextField from '@mui/material/TextField'
 
-import { fetchCompanyGQL, fetchUserGQL, setCompanyGQL, setHandleNameGQL } from './queries'
 import { getAlertMessage } from './methods'
+import { fetchCompanyGQL, fetchUserGQL, setCompanyGQL, setHandleNameGQL } from './queries'
 
 const steps = [
   '会社ログイン',

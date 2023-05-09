@@ -32,7 +32,7 @@ type Props = {
   userName: string
   officeId: number
   officeName: string
-  setRegisterMode: Dispatch<SetStateAction<string>>
+  setDialogState: Dispatch<SetStateAction<string>>
 }
 
 type ChooseVisitTypeProps = {
@@ -104,7 +104,7 @@ const SetDateTime = (props: SetDateTimeProps) => (
   </LocalizationProvider>
 )
 
-const RegisterVisitDialog = ({ userId, userName, officeId, officeName, setRegisterMode }: Props) => {
+const RegisterVisitDialog = ({ userId, userName, officeId, officeName, setDialogState }: Props) => {
   const [activeStep, setActiveStep] = useState(0)
   const [nowInOffice, setNowInOffice] = useState(true)
   const [selectedDateFrom, setSelectedDateFrom] = useState<Date|null>(new Date())
@@ -126,9 +126,9 @@ const RegisterVisitDialog = ({ userId, userName, officeId, officeName, setRegist
       }
     }).then((result) => {
       if (result.errors !== undefined || result.data.insert_visits === undefined) {
-        setRegisterMode('registerFailed')
+        setDialogState('registerFailed')
       } else {
-        setRegisterMode('registerCompleted')
+        setDialogState('registerCompleted')
       }
     })
   }
@@ -140,7 +140,7 @@ const RegisterVisitDialog = ({ userId, userName, officeId, officeName, setRegist
           <IconButton
             edge='start'
             color='inherit'
-            onClick={() => setRegisterMode('off')}
+            onClick={() => setDialogState('off')}
             aria-label='close'
           >
             <CloseIcon />
